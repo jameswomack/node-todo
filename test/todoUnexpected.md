@@ -9,7 +9,7 @@
 ##dir/todo.js
 1 Second todo.
 
-##dir/child_dir/todo.js
+###dir/child_dir/todo.js
 1 Third todo.
 3 Fourth todo
 4 Fifth todo

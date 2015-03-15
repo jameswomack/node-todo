@@ -1,15 +1,27 @@
 // TODO Throw an error message when no .gitignore is present
-var path = require("path");
-var fs = require("fs");
-var split = require("split");
+var path = require('path');
+var fs = require('fs');
+var split = require('split');
 var hw = require('headway');
 
 var ignoreList = fs.readFileSync('.gitignore').toString().split('\n');
 var output = fs.createWriteStream('todo.md');
 var outputStarted = false;
 var commentSyntax = /\s*(\/\/|\/\*|\*|#)\s(TODO|FIXME).*/i;
-var commentMatch = /\s*(\/\/|\/\*|\*|#)\s(TODO|FIXME)/i;
+// Support TODO -, TODO:, FIXME
+var commentMatch = /\s*(\/\/|\/\*|\*|#)\s(TODO|FIXME)(:| -)*/i;
 var filesWritten = [];
+var lineMap = {};
+var buffer = '';
+
+/* A proxy write method to allow for
+ * sending the output to stdOut
+ */
+function outputWrite(content){
+  buffer = buffer + content;
+  output.write(content);
+  return buffer;
+}
 
 /* Walks all child directories looking for files to scan starting from
  * a root directory.
@@ -48,7 +60,7 @@ function walk(dir, cb) {
         });
       });
     });
-  })(rootDir)
+  })(rootDir);
 
   /*
    * This deals with the case where we read
@@ -66,25 +78,28 @@ function walk(dir, cb) {
  *                          for each file in todo.md
  */
 function scan(file, header) {
+  lineMap[file] = 0;
+
   fs.createReadStream(file)
     .pipe(split())
     .on('data', function(line) {
       line = line.toString();
+      lineMap[file]++;
 
       if (commentSyntax.test(line)) {
         if (!outputStarted) {
-          output.write('#TODOS\n');
+          outputWrite('#TODOS\n');
           outputStarted = true;
         }
 
         if (contains(filesWritten, header)) {
-          header = null
+          header = null;
         } else {
           filesWritten.push(header);
         }
 
-        output.write(format(line.replace(commentMatch, ''), header));
-      };
+        outputWrite(format(line.replace(commentMatch, lineMap[file] + ''), header));
+      }
     });
 }
 
@@ -97,8 +112,8 @@ function scan(file, header) {
  * @returns {string} The header to be displayed in todos.md
  */
 function format(line, header) {
-  var header = header ? '\n##' + header + '\n' : header;
-  var line = '-' + line + '\n';
+  header = header ? '\n##' + header + '\n' : header;
+  line = line + '\n';
   return header ? header + line : line;
 }
 
@@ -163,6 +178,7 @@ function init(argv) {
   walk(null, function(err) {
     if (err) hw.log('{red}' + err);
     hw.log('\n {yellow}Your todos are in todo.md\n');
+    hw.log('\n {red}' + buffer + '\n');
   });
 }
 

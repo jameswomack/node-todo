@@ -1,28 +1,39 @@
 {
-  "name": "gen-todos",
-  "version": "1.0.1",
-  "description": "Generate helpful todos from a projects source.",
+  "name": "comment-todo-parser",
+  "version": "1.0.0",
+  "description": "Create a README from all TODOs and FIXMEs in your project.",
   "main": "src/todo.js",
   "scripts": {
     "prepublish": "npm prune",
-    "test": "cd test && mocha"
+    "test": "mocha"
   },
-  "homepage": "https://github.com/ConnorAtherton/node-todo",
+  "homepage": "https://github.com/jameswomack/node-todo",
   "repository": {
     "type": "git",
-    "url": "git://github.com/ConnorAtherton/node-todo.git"
+    "url": "git://github.com/jameswomack/node-todo.git"
   },
   "bin": {
-    "todos": "./bin/todo.js"
+    "todo-readme": "./bin/todo.js"
   },
   "keywords": [
-    "todo"
+    "todo",
+    "fixme",
+    "comments",
+    "markdown"
   ],
-  "author": "Connor Atherton",
+  "contributors": [
+    "Connor Atherton",
+    "James Womack"
+  ],
   "license": "MIT",
   "dependencies": {
     "headway": "0.0.2",
     "minimist": "^1.1.0",
-    "split": "~0.3.0"
+    "split": "^0.3.0"
+  },
+  "devDependencies": {
+    "chai": "2.1.1",
+    "del": "1.1.1",
+    "mocha": "2.2.1"
   }
 }
