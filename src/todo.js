@@ -113,7 +113,7 @@ function scan(file, header) {
  */
 function format(line, header) {
   header = header ? '\n##' + header + '\n' : header;
-  line = line + '\n';
+  line = line + '\n\n';
   return header ? header + line : line;
 }
 
